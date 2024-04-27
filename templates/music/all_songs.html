@@ -1,0 +1,376 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<style>
+    h2 {
+        margin-left: 30px;
+    }
+    .song-container {
+        display: grid;
+        grid-template-columns: repeat(8, 1fr);
+        gap: 10px;
+        grid-auto-rows: 
+    }
+
+    .song-item {
+        margin: 0;
+        padding: 2px;
+    }
+
+    .song-image {
+        margin-left: 30px;
+        border-radius: 8px;
+        height: 135px;
+        width: 135px;
+    }
+
+    .song-details {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #626262;
+        text-align: center;
+
+    }
+    .song-name{
+        text-align: center;
+
+    }
+
+    .footer-image {
+        width: 95px;
+        height: 95px;
+        border-radius: 8px;
+        margin-right: 20px;
+    }
+
+    .audio-player {
+        flex: 1;
+    }
+
+    footer {
+        display: flex;
+        align-items: center;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background-color: #333333;
+        padding: 20px;
+        border-top: 1px solid #555555;
+    }
+
+    .like-symbol {
+        font-size: 24px;
+        color: white;
+        margin-right: 20px;
+    }
+
+    .track-info {
+        display: flex;
+        align-items: center;
+        color: white;
+        flex: 1;
+    }
+
+    .track-info p {
+        margin: 0;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    .track-controls {
+        display: flex;
+        align-items: center;
+    }
+
+    .icon {
+        font-size: 24px;
+        color: white;
+        margin: 0 10px;
+        cursor: pointer;
+    }
+
+    .music-player {
+        width: 50%;
+        max-width: 500px;
+        margin: 40px auto;
+        text-align: center;
+    }
+
+    .buttons {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .buttons > div {
+        margin: 0 10px;
+        cursor: pointer;
+    }
+
+    .fa {
+        color: #fff;
+    }
+
+    .fa:hover {
+        color: #fff;
+    }
+
+    .singer-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
+        margin-top: 30px;
+    }
+
+    .singer-item {
+        text-align: center;
+    }
+
+    .singer-image {
+        border-radius: 50%;
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        margin-bottom: 10px;
+    }
+
+    .singer-name {
+        color: #626262;
+    }
+
+    .audio-tracker {
+        width: 50%;
+        height: 5px;
+        background-color: #777;
+        position: relative;
+        margin-top: 10px;
+        display: flex;
+        align-items: center;
+    }
+
+    .progress-bar {
+        height: 100%;
+        background-color: #fff;
+        width: 10%; /* Set the width as needed */
+        transition: width 0.1s linear;
+    }
+
+    .like-symbol {
+        font-size: 24px;
+        color: green; /* Initial color */
+        transition: color 0.3s; /* Smooth color transition */
+        cursor: pointer; /* Change cursor to pointer on hover */
+    }
+
+    /* Hover effect for the heart icon */
+    .like-symbol:hover {
+        color: green; /* Change color to green on hover */
+    }
+
+    /* Updated style for the heart icon when liked */
+    .liked .like-symbol {
+        color: green;
+    }
+</style>
+
+<h2>All Songs</h2>
+<div class="song-container">
+    {% for song, image_url in songs_with_images %}
+    <div class="song-item" data-song-url="{{ song.song_file.url }}" data-song-name="{{ song.title }}" data-artist-name="{{ song.artist.name }}">
+        <img src="{{ image_url }}" alt="{{ song.title }}" class="song-image" onclick="playSong(this)">
+        <div class="song-details" data-song-id="{{ song.id }}">
+            <p class="song-name">{{ song.title }}</p>
+            <i class="far fa-heart like-symbol" onclick="toggleFavorite(this)"></i>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<audio id="audio-player" class="audio-player" controls style="display: none;">
+    Your browser does not support the audio element.
+</audio>
+<footer id="footer" style="display: none; align-items: center;">
+    <img src="" alt="Footer Image" class="footer-image" id="footer-image">
+
+    <div class="track-details" style="flex: 1;">
+        <p id="track-name" style="margin-bottom: 5px;"></p>
+        <p id="artist-name"></p>
+    </div>
+        
+
+    <div class="audio-tracker">
+        <div id="progress-bar" class="progress-bar">
+            <div class="track-controls" style="position: absolute;left:300px;right:300px; top: -40px; align-items: center;">
+                <span class="icon" id="prev-song"><i class="fas fa-backward"></i></span>
+                <span class="icon" id="play-pause"><i class="fas fa-play"></i></span>
+                <span class="icon" id="next-song"><i class="fas fa-forward"></i></span>
+            </div>
+        </div>
+    </div>
+    
+
+    <div class="time-display" style="color: white; margin-left: 10px;">0:00 / 0:00</div>
+</footer>
+<script>
+    var audioPlayer = document.getElementById('audio-player');
+    var isPlaying = false;
+    var progressBar = document.getElementById('progress-bar');
+    var timeDisplay = document.querySelector('.time-display');
+    var songs = [];
+
+    {% for song, image_url in songs_with_images %}
+    songs.push({
+        url: "{{ song.song_file.url }}",
+        name: "{{ song.title }}",
+        artist: "{{ song.artist.name }}",
+        image: "{{ image_url }}"
+    });
+    {% endfor %}
+
+    var currentSongIndex = 0;
+
+    function playSong(element) {
+        var songUrl = element.parentNode.getAttribute('data-song-url');
+        var songName = element.parentNode.getAttribute('data-song-name');
+        var artistName = element.parentNode.getAttribute('data-artist-name');
+        var imageUrl = element.getAttribute('src');
+
+        audioPlayer.src = songUrl;
+        audioPlayer.play();
+        isPlaying = true;
+
+        document.getElementById('track-name').textContent = songName;
+        document.getElementById('artist-name').textContent = artistName;
+        document.getElementById('footer-image').src = imageUrl;
+        document.getElementById('footer').style.display = 'flex';
+
+        // Update currentSongIndex to the selected song
+        currentSongIndex = songs.findIndex(song => song.url === songUrl);
+
+        audioPlayer.addEventListener('ended', playNextSong);
+    }
+
+    function playNextSong() {
+        currentSongIndex++;
+        if (currentSongIndex >= songs.length) {
+            currentSongIndex = 0;
+        }
+        playSelectedSong(currentSongIndex);
+    }
+
+    function playPreviousSong() {
+        currentSongIndex--;
+        if (currentSongIndex < 0) {
+            currentSongIndex = songs.length - 1;
+        }
+        playSelectedSong(currentSongIndex);
+    }
+
+    function playSelectedSong(index) {
+        var song = songs[index];
+        audioPlayer.src = song.url;
+        audioPlayer.play();
+        isPlaying = true;
+
+        document.getElementById('track-name').textContent = song.name;
+        document.getElementById('artist-name').textContent = song.artist;
+        document.getElementById('footer-image').src = song.image;
+        document.getElementById('footer').style.display = 'flex';
+
+        currentSongIndex = index;
+
+        audioPlayer.addEventListener('ended', playNextSong);
+    }
+
+    document.getElementById('next-song').addEventListener('click', playNextSong);
+    document.getElementById('prev-song').addEventListener('click', playPreviousSong);
+
+    audioPlayer.addEventListener('timeupdate', function() {
+        var currentTime = audioPlayer.currentTime;
+        var duration = audioPlayer.duration;
+        var progress = (currentTime / duration) * 100;
+        progressBar.style.width = progress + '%';
+        timeDisplay.textContent = formatTime(currentTime) + ' / ' + formatTime(duration);
+    });
+
+    function formatTime(time) {
+        var minutes = Math.floor(time / 60);
+        var seconds = Math.floor(time % 60);
+        return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+    }
+
+    progressBar.addEventListener('click', function(event) {
+        var rect = progressBar.getBoundingClientRect();
+        var totalWidth = rect.width;
+        var clickX = event.clientX - rect.left;
+        var newTime = (clickX / totalWidth) * audioPlayer.duration;
+        audioPlayer.currentTime = newTime;
+    });
+   
+
+    audioPlayer.addEventListener('ended', function() {
+        document.getElementById('footer').style.display = 'none';
+        isPlaying = false;
+    });
+
+    function playPauseSong() {
+        if (isPlaying) {
+            audioPlayer.pause();
+            isPlaying = false;
+            document.getElementById('play-pause').innerHTML = '<i class="fas fa-play "></i>';
+        } else {
+            audioPlayer.play();
+            isPlaying = true;
+            document.getElementById('play-pause').innerHTML = '<i class="fas fa-pause"></i>';
+        }
+    }
+    document.getElementById('play-pause').addEventListener('click', playPauseSong);
+
+    function toggleFavorite(icon) {
+        var songDetails = icon.parentNode;
+        var songId = songDetails.getAttribute('data-song-id');
+    
+        // Toggle the 'fas' and 'far' classes to change the heart color
+        icon.classList.toggle('fas');
+        icon.classList.toggle('far');
+
+        // Toggle the 'liked' class on the song details to change the heart color
+        songDetails.classList.toggle('liked');
+
+        // Add or remove the song from favorites as needed
+        if (songDetails.classList.contains('liked')) {
+            addToFavorites(songId);
+        } else {
+            // You can also remove the song from favorites here
+        }
+    }
+
+    function addToFavorites(songId) {
+        // Send a request to your Django view to add the song to the favorites list
+        fetch(`/add-to-favorites/${songId}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}',
+            },
+            body: JSON.stringify({ 'song_id': songId }),
+        })
+        .then(response => {
+            if (response.ok) {
+                // Update the heart icon to indicate the song is now in favorites
+                document.querySelector(`[data-song-id="${songId}"] .like-symbol`).classList.add('fas');
+                document.querySelector(`[data-song-id="${songId}"] .like-symbol`).classList.remove('far');
+            } else {
+                console.error('Failed to add song to favorites');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+</script>
+
+{% endblock %}

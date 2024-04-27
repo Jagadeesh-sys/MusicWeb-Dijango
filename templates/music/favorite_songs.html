@@ -1,0 +1,15 @@
+<!-- favorite_songs.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Favorite Songs</h2>
+{% if favorite_songs %}
+<ul>
+    {% for song in favorite_songs %}
+    <li>{{ song.title }} by {{ song.artist.name }}</li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No favorite songs found.</p>
+{% endif %}
+{% endblock %}

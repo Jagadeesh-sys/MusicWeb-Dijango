@@ -1,0 +1,331 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSMusic</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
+    <style>
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    position: relative;
+    background-color: #f4f4f4;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Header Styles */
+header {
+    padding: 20px 0;
+    text-align: center;
+    position: relative; /* Add position relative */
+}
+
+header h1 {
+    margin: 0;
+    font-size: 24px;
+    color: #fff; /* Adjust text color for better visibility */
+    z-index: 1; /* Ensure text is on top of the image */
+    position: relative; /* Add position relative */
+}
+
+.logo {
+    flex: 2;
+    text-align: left;
+    padding: 5px;
+    margin-left: 20px;
+    font-size: 20px; /* Adjust the font size as needed */
+    font-weight: bold;
+}
+
+.logo div {
+    display: inline-block;
+}
+
+.js {
+    color: #00263a; /* Color for 'JS' */
+}
+
+.music {
+    color: green; /* Color for 'Music' */
+}
+
+
+/* Main Styles */
+main {
+    padding: 0px 0;
+}
+
+.intro {
+    text-align: center;
+    padding: 300px 0;
+    background-image: url('{% static 'images/m2.png' %}');
+    background-size: cover;
+    background-position: top;
+    background-repeat: no-repeat;
+    color: #fff;
+    position: relative; /* Add position relative */
+}
+.intro h1 {
+    margin: 0;
+    font-size: 46px;
+    color: #fff;
+}
+
+.intro p {
+    font-size: 18px;
+    color: #fff;
+}
+
+
+.navbar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1; /* Ensure the navigation bar is on top */
+}
+
+/* Adjust padding for better visibility */
+.navbar ul {
+    padding: 10px 0;
+}
+
+.nav-items {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+.nav-items li {
+    display: inline-block;
+    margin-right: 20px;
+}
+
+.nav-items li:last-child {
+    margin-right: 0;
+}
+
+.nav-items li a {
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+}
+
+.achievements {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 20px 0;
+    background-color: #fff;
+}
+
+.work {
+    text-align: center;
+    padding: 20px;
+    margin: 10px;
+    flex: 1;
+}
+
+.work i {
+    font-size: 36px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.work-heading {
+    font-size: 24px;
+    color: #333;
+    margin: 10px 0;
+}
+
+.work-text {
+    font-size: 16px;
+    color: #666;
+    margin: 0;
+}
+
+.about-me {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 20px 0;
+    background-color: #fff;
+}
+
+.about-me img {
+    max-width: 100%;
+    height: auto;
+    margin: 20px;
+}
+
+.about-me-text {
+    text-align: center;
+    flex: 1;
+    padding: 20px;
+}
+
+.about-me-text h2 {
+    font-size: 36px;
+    color: #069eef;
+    margin: 0;
+}
+
+
+
+/* Footer Styles */
+footer {
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 20px 0;
+}
+
+.bottom-links {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 20px 0;
+}
+
+.links {
+    text-align: center;
+    flex: 1;
+    padding: 0 20px;
+}
+
+.links span {
+    font-size: 18px;
+    color: #fff;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.links a {
+    color: #a1a1a1;
+    text-decoration: none;
+    font-size: 16px;
+    margin-bottom: 5px;
+    display: block;
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+    .achievements {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .achievements .work {
+        width: 100%;
+    }
+
+    .about-me {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .about-me img {
+        width: 80%;
+        margin: 20px 0;
+    }
+
+    .bottom-links .links {
+        width: 50%;
+        padding: 0;
+    }
+}
+
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="logo">
+            <div><span class="js">JS</span><span class="music">Music</span></div>
+        </div>
+        
+        <div class="login">
+            <a href="{% url 'login' %}" class="button">Login</a>
+        </div>
+        <div class="signup">
+            <a href="{% url 'signup' %}" class="button">Signup</a>
+        </div>
+    </header>
+    
+    
+    <main>
+        <div class="intro">
+            <nav class="navbar">
+                <ul class="nav-items">
+                    <li><a href="{% url 'all_songs' %}">All Songs</a></li>
+                    <li><a href="{% url 'artists' artist_id=1 %}">Artists</a></li>
+                    <li><a href="{% url 'new_songs' %}">New Songs</a></li>
+                    <li><a href="{% url 'old_songs' %}">Old Songs</a></li>
+                    <li><a href="{% url 'trending_songs' %}">Trending Songs</a></li>
+                </ul>
+            </nav>
+            <h1>Welcome to <span style="color:#069eef;">JS</span><span style="color: green;">Music</span>
+            </h1>
+            
+        </div>
+        <div class="achievements">
+            <div class="work">
+                <i class="fas fa-music"></i>
+                <p class="work-heading">Top Hits</p>
+                <p class="work-text">Explore the top hit songs of the season.</p>
+            </div>
+            <div class="work">
+                <i class="fas fa-user-music"></i>
+                <p class="work-heading">Featured Artists</p>
+                <p class="work-text">Discover the talented artists behind the music.</p>
+            </div>
+            <div class="work">
+                <i class="fas fa-headphones"></i>
+                <p class="work-heading">Listen Anywhere</p>
+                <p class="work-text">Enjoy your favorite music on the go.</p>
+            </div>
+        </div>
+        <div class="about-me">
+            <div class="about-me-text">
+                <h2>About JSMusic</h2>
+                <p>JSMusic is your one-stop destination for music lovers. Discover new songs, listen to your favorite artists, and create your own playlists.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="copy">&copy; 2024 JSMusic</div>
+        <div class="bottom-links">
+            <div class="links">
+                <span>Quick Links</span>
+                <a href="#">Home</a>
+                <a href="#">About</a>
+                <a href="#">Contact</a>
+            </div>
+            <div class="links">
+                <span>Follow Us</span>
+                <a href="#"><i class="fab fa-facebook"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

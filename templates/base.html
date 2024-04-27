@@ -1,0 +1,132 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSMusic</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+</head>
+<style>
+    /* profile.css */
+
+    .profile-card {
+        display: none;
+        position: absolute;
+        height: 200px;
+        top: 50px;
+        right: 10px;
+        padding: 20px;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .profile-card.active {
+        display: block;
+    }
+    
+    .profile-details {
+        text-decoration: none;
+        font-weight: bold;
+        margin-top: 20px;
+        display: flex;
+        padding: 20px;
+        flex-direction: column;
+        color: #333; /* Text color */
+        font-size: 16px; /* Font size */
+    }
+    
+    .profile-details div {
+        margin-bottom: 10px;
+    }
+    
+    .user-info {
+        margin-left: 20px;
+    }
+    
+    .user-info a {
+        font-size: 24px;
+        text-decoration: none;
+        font-weight: bold;
+        color: #333; /* Icon color */
+        margin-right: 10px; /* Add some space between icon and text */
+    }
+    
+    
+   
+</style>
+<body>
+    <header>
+        
+        <div class="logo">
+            <div><span style="color: Blue;">JS</span><span style="color: green;">Music</span></div>
+        </div>
+        
+        
+        <div class="search-box">
+            <form action="{% url 'search' %}" method="GET">
+                <div class="search-box">
+                    <input type="text" name="query" class="search-input" placeholder="Search Music....">
+                    <button class="search-button">Search</button>
+                </div>
+            </form>
+        </div>
+            {% if user.is_authenticated %}
+            {{ user.name }}
+            <div class="user-info">
+                <a href="#" id="profile-icon"><i class="fas fa-user"></i></a>
+                <div class="profile-card" id="profile-card">
+                    <div class="profile-details">
+                        <div><i class="fas fa-user"></i> {{ user.name }}</div>
+                        <div><i class="fas fa-user"></i> {{ user.username }}</div>
+                    <a href="{% url 'display_favorite_songs' %}"><i class="fas fa-archive"></i>Your Library</a>
+
+                    </div>
+                    <a href="{% url 'logout' %}" class="user-info"><i class="fas fa-sign-out-alt"></i> Logout</a>
+
+                </div>
+            </div>
+            {% endif %}
+    </header>
+    <nav class="navbar">
+        <ul class="nav-items">
+            <li><a href="{% url 'all_songs' %}">All Songs</a></li>
+            <li><a href="{% url 'artists' artist_id=1 %}">Artists</a></li>
+            <li><a href="{% url 'new_songs' %}">New Songs</a></li>
+            <li><a href="{% url 'old_songs' %}">Old Songs</a></li>
+            <li><a href="{% url 'trending_songs' %}">Trending Songs</a></li>
+        </ul>
+    </nav>
+    <section id="about" class="section">
+        <div class="about-content">
+            <!-- Your content goes here -->
+            {% block content %}{% endblock %}
+        </div>
+    </section>
+
+    <script>
+        // profile.js
+document.addEventListener('DOMContentLoaded', function() {
+    var profileIcon = document.getElementById('profile-icon');
+    var profileCard = document.getElementById('profile-card');
+
+    profileIcon.addEventListener('click', function() {
+        profileCard.classList.toggle('active');
+    });
+
+    document.addEventListener('click', function(event) {
+        if (!profileCard.contains(event.target) && !profileIcon.contains(event.target)) {
+            profileCard.classList.remove('active');
+        }
+    });
+});
+
+    </script>
+</body>
+
+</html>

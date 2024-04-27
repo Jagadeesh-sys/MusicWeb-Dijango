@@ -1,0 +1,30 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <header>
+        <h1>Music Website</h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="{% url 'all_songs' %}">All Songs</a></li>
+            <li><a href="{% url 'artists' %}">Artists</a></li>
+            <li><a href="{% url 'new_songs' %}">New Songs</a></li>
+            <li><a href="{% url 'old_songs' %}">Old Songs</a></li>
+            <li><a href="{% url 'trending_songs' %}">Trending Songs</a></li>
+        </ul>
+    </nav>
+    <main>
+        <h2>Search Results</h2>
+        <!-- Display search results here -->
+    </main>
+</body>
+</html>

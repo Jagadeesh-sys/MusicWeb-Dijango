@@ -1,0 +1,296 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<style>
+    
+    h2{
+        margin-left: 80px; 
+
+    }
+    .singer-name {
+        font-size: 54px; 
+        font-weight: bold;
+
+        
+    }
+    .singer-item {
+        display: flex;
+        align-items: center;
+        margin-left: 50px;
+    }
+    
+    .singer-image {
+        border-radius: 5%; /* Display the image in a circle */
+        width: 200px; /* Adjust the size as needed */
+        height: 200px; /* Adjust the size as needed */
+        margin-right: 10px; /* Add some space between the image and the name */
+    }
+    
+    .song-item {
+        margin-left: 50px; 
+        padding: 2px;
+    }
+
+    .song-image {
+        margin-left: 20px;
+        border-radius: 8px;
+        height: 50px;
+        width: 50px;
+    }
+
+    .song-details {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #626262;
+    }
+
+    .player-container {
+        display: none;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 30%;
+        background-color: #f1f1f1;
+        padding: 20px;
+    }
+
+    .player-container.active {
+        display: block;
+    }
+
+    /* Additional styles for table */
+    table {
+        margin-left: 50px; 
+        width: 60%;
+        border-collapse: collapse;
+        font-family: Arial, sans-serif;
+    }
+
+    th, td {
+        padding: 8px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+    
+    .audio-tracker {
+        width: 50%;
+        height: 5px;
+        background-color: #777;
+        position: relative;
+        margin-top: 10px;
+        display: flex;
+        align-items: center;
+    }
+   
+    .progress-bar {
+        height: 100%;
+        background-color: #fff;
+        width: 10%; /* Set the width as needed */
+        transition: width 0.1s linear;
+    }
+    .footer-image {
+        width: 95px;
+        height: 95px;
+        border-radius: 8px;
+        margin-right: 20px;
+    }
+
+    .audio-player {
+        flex: 1;
+    }
+
+    footer {
+        display: flex;
+        align-items: center;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background-color: #333333;
+        padding: 20px;
+        border-top: 1px solid #555555;
+    }
+
+    .like-symbol {
+        font-size: 24px;
+        color: white;
+        margin-right: 20px;
+    }
+
+    .track-info {
+        display: flex;
+        align-items: center;
+        color: white;
+        flex: 1;
+    }
+
+    .track-info p {
+        margin: 0;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    .track-controls {
+        display: flex;
+        align-items: center;
+    }
+
+    .icon {
+        font-size: 24px;
+        color: white;
+        margin: 0 10px;
+        cursor: pointer;
+    }
+</style>
+
+<div class="singer-item">
+    <img src="{{ artist.singer_image.url }}" alt="{{ artist.name }}" class="singer-image">
+    <p class="singer-name">{{ artist.name }}</p>
+</div>
+
+<h2>{{ artist.name }} Songs</h2>
+<table class="song-table">
+    <thead>
+        <tr>
+            <th> </th>
+            <th>Image</th>
+            <th>Title</th>
+            <th>Artist</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for song in artist.songs.all %}
+        <tr class="song-item" data-song-url="{{ song.song_file.url }}" data-image-url="{{ song.image.url }}" data-song-name="{{ song.title }}" data-artist-name="{{ artist.name }}">
+            <td>
+                <button onclick="playSong('{{ song.song_file.url }}', '{{ song.image.url }}', '{{ song.id }}', '{{ song.title }}', '{{ artist.name }}', this)">
+                    <i class="fas fa-play"></i> 
+                </button>
+            </td>
+            <td><img src="{{ song.image.url }}" alt="{{ song.title }}" class="song-image"></td>
+            <td>{{ song.title }}</td>
+            <td>{{ artist.name }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<audio id="audio-player" class="audio-player" controls style="display: none;">
+    Your browser does not support the audio element.
+</audio>
+<footer id="footer" style="display: none; align-items: center;">
+    <img src="" alt="Footer Image" class="footer-image" id="footer-image">
+
+    <div class="track-details" style="flex: 1;">
+        <p id="track-name" style="margin-bottom: 5px;"></p>
+        <p id="artist-name"></p>
+    </div>
+        
+
+    <div class="audio-tracker">
+        <div id="progress-bar" class="progress-bar">
+            <div class="track-controls" style="position: absolute;left:300px;right:300px; top: -40px; align-items: center;">
+                <span class="icon" id="prev-song"><i class="fas fa-backward"></i></span>
+                <span class="icon" id="play-pause"><i class="fas fa-play"></i></span>
+                <span class="icon" id="next-song"><i class="fas fa-forward"></i></span>
+            </div>
+        </div>
+    </div>
+    
+
+    <div class="time-display" style="color: white; margin-left: 10px;">0:00 / 0:00</div>
+</footer>
+
+<script>
+    var currentSongId = null;
+    var isPlaying = false;
+    var songItems = document.querySelectorAll('.song-item');
+    var playPauseIcon = document.getElementById('play-pause');
+    var audioPlayer = document.getElementById('audio-player');
+    var progressBar = document.getElementById('progress-bar');
+    var timeDisplay = document.querySelector('.time-display');
+    
+    function playSong(songUrl, imageUrl, songId, songName, artistName) {
+        audioPlayer.src = songUrl;
+        audioPlayer.play();
+    
+        document.getElementById('footer-image').src = imageUrl;
+        document.getElementById('footer').style.display = 'flex';
+    
+        currentSongId = songId;
+        isPlaying = true;
+    
+        // Set the track name and artist in the footer
+        document.getElementById('track-name').textContent = songName;
+        document.getElementById('artist-name').textContent = artistName;
+    
+        // Change the play/pause icon to pause
+        playPauseIcon.innerHTML = '<i class="fas fa-pause"></i>';
+    
+        // Set the like button action based on songId
+        var likeButton = document.querySelector('.like-symbol');
+        likeButton.onclick = function() {
+            // Implement like functionality here
+            alert('Liked song with ID: ' + songId);
+        };
+    
+        // Play next song when current song ends
+        audioPlayer.onended = function() {
+            var nextSongId = getNextSongId('next');
+            var nextSong = document.querySelector(`[data-id="${nextSongId}"]`);
+            playSong(nextSong.dataset.songUrl, nextSong.dataset.imageUrl, nextSongId, nextSong.dataset.songName, nextSong.dataset.artistName);
+        };
+    }
+    
+    function togglePlayPause() {
+        if (isPlaying) {
+            audioPlayer.pause();
+            playPauseIcon.innerHTML = '<i class="fas fa-play"></i>'; // play icon
+        } else {
+            audioPlayer.play();
+            playPauseIcon.innerHTML = '<i class="fas fa-pause"></i>'; // pause icon
+        }
+    
+        isPlaying = !isPlaying;
+    }
+    
+    function getNextSongId(direction) {
+        var currentIndex = Array.from(songItems).findIndex(item => item.dataset.id === currentSongId);
+        var nextIndex = direction === 'next' ? (currentIndex + 1) % songItems.length : (currentIndex - 1 + songItems.length) % songItems.length;
+        return songItems[nextIndex].dataset.id;
+    }
+    
+    document.getElementById('play-pause').addEventListener('click', togglePlayPause);
+    
+    document.getElementById('next-song').addEventListener('click', function() {
+        var nextSongId = getNextSongId('next');
+        var nextSong = document.querySelector(`[data-id="${nextSongId}"]`);
+        playSong(nextSong.dataset.songUrl, nextSong.dataset.imageUrl, nextSongId, nextSong.dataset.songName, nextSong.dataset.artistName);
+    });
+    
+    document.getElementById('prev-song').addEventListener('click', function() {
+        var prevSongId = getNextSongId('prev');
+        var prevSong = document.querySelector(`[data-id="${prevSongId}"]`);
+        playSong(prevSong.dataset.songUrl, prevSong.dataset.imageUrl, prevSongId, prevSong.dataset.songName, prevSong.dataset.artistName);
+    });
+    
+    
+    audioPlayer.addEventListener('timeupdate', function() {
+        var currentTime = audioPlayer.currentTime;
+        var duration = audioPlayer.duration;
+        var progress = (currentTime / duration) * 100;
+        progressBar.style.width = progress + '%';
+        timeDisplay.textContent = formatTime(currentTime) + ' / ' + formatTime(duration);
+    });
+    
+    function formatTime(time) {
+        var minutes = Math.floor(time / 60);
+        var seconds = Math.floor(time % 60);
+        return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+    }
+    
+</script>
+
+{% endblock %}

@@ -1,0 +1,206 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<title>Login</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+</head>
+<style>
+    body {
+		font-family: 'Arial', sans-serif;
+		margin: 0;
+		padding: 0;
+		background-color: #ffffff; /* Light gray background color */
+	}
+	
+	.main {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		height: 100vh;
+	}
+	
+	.image-container {
+		margin-left: 20px; /* Adjust this value to create space between image and form */
+	}
+	
+	.image-container img {
+		max-width: 100%;
+		height: auto;
+	}
+	
+	.signin-content {
+		display: flex;
+		flex-direction: column;
+		padding: 20px;
+	}
+	
+	.form-title {
+		color: #333; /* Dark gray text color */
+		margin-bottom: 20px;
+		width:300px;
+		text-align: center;
+
+
+	}
+	
+	.form-group {
+		margin-bottom: 15px;
+	}
+	
+	label {
+		color: #555; /* Gray text color for labels */
+	}
+	
+	input[type="text"],
+	input[type="password"] {
+		width: 100%;
+		padding: 10px;
+		border: 1px solid #ccc; /* Light gray border */
+		border-radius: 20px;
+	}
+	
+	.form-submit {
+		width: 100%;
+		padding: 10px;
+		background-color: #007bff; /* Blue submit button color */
+		color: #fff; /* White text color */
+		border: none;
+		border-radius: 20px;
+		cursor: pointer;
+		transition: background-color 0.3s;
+	}
+	
+	.form-submit:hover {
+		background-color: #0056b3; /* Darker blue hover color */
+	}
+	.form-group.form-button {
+		margin-top: 20px; /* Adjust the value to create the desired space */
+		text-align: center;
+	}
+	
+	.form-group.form-button input {
+		margin-bottom: 10px; /* Optional: add margin below the button */
+	}
+	.signin-link {
+		display: block;
+		text-align: center;
+		margin-top: 20px;
+		color: #333; /* Dark gray text color */
+		text-decoration: none;
+	}
+	
+	.signin-link a {
+		color: #007bff; /* Blue link color */
+		text-decoration: none;
+	}
+	
+	.signin-link a:hover {
+		text-decoration: underline; /* Underline on hover */
+	}
+	
+	
+	.social-label {
+		color: #555; /* Gray text color for social login label */
+	}
+	
+	.socials {
+		list-style-type: none;
+		padding: 0;
+		margin: 10px 0 0 0;
+		text-align: center;
+	}
+	
+	.socials li {
+		display: inline-block;
+		margin-right: 10px;
+	}
+	
+	.socials li:last-child {
+		margin-right: 0;
+	}
+	.social-login{
+		text-align: center;
+
+	}
+	.socials a {
+		display: block;
+		width: 30px;
+		height: 30px;
+		background-color: #ccc; /* Light gray social icon background color */
+		border-radius: 50%;
+		text-align: center;
+		line-height: 30px;
+		transition: background-color 0.3s;
+	}
+	
+	.socials a:hover {
+		background-color: #999; /* Darker gray hover color for social icons */
+	}
+	
+</style>
+<body>
+
+<div class="main">
+
+    <!-- Sign in Form -->
+    <section class="sign-in">
+        <div class="container">
+            <div class="signin-content">
+                <div class="signin-form">
+					
+                    <h2 class="form-title">Sign Up</h2>
+                    <form action="{% url 'signup' %}" method="post">
+						{% csrf_token %}
+						<div class="form-group">
+							<label for="name"><i class="zmdi zmdi-account material-icons-name"></i></label>
+							<input type="text" name="name" id="name" placeholder="Name" />
+						</div>
+						<div class="form-group">
+							<label for="username"><i class="zmdi zmdi-account material-icons-name"></i></label>
+							<input type="text" name="username" id="username" placeholder="Username" />
+						</div>
+						<div class="form-group">
+							<label for="password"><i class="zmdi zmdi-lock"></i></label>
+							<input type="password" name="password" id="password" placeholder="Password" />
+						</div>
+						<div class="form-group">
+							<label for="confirm-password"><i class="zmdi zmdi-lock"></i></label>
+							<input type="password" name="confirm-password" id="confirm-password" placeholder="Confirm Password" />
+						</div>
+						
+						<div class="form-group form-button">
+							<input type="submit" name="signup" id="signup" class="form-submit" value="Sign Up" />
+							<span>Already have an account?</span> <a href="{% url 'login' %}">Login</a>
+
+						</div>
+						
+					</form>
+					
+                    <div class="social-login">
+                        <span class="social-label">Or sign up with</span>
+                        <ul class="socials">
+                            <li><a href="#"><i class="fab fa-facebook-f"></i></a></li>
+                            <li><a href="#"><i class="fab fa-twitter"></i></a></li>
+                            <li><a href="#"><i class="fab fa-google"></i></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Image -->
+    <div class="image-container">
+        <img src="{% static 'images/signup.jpg' %}" alt="Signup Image">
+    </div>
+
+</div>
+
+</body>
+</html>
